@@ -1,0 +1,27 @@
+{
+    "instructor": {
+        "assignments": {
+            "login": "assignments", 
+            "url": "git@github.com:jarrodmillman/example-assignments.git", 
+            "type": "instructor"
+        }
+    }, 
+    "projects": {
+        "jarrodmillman": {
+            "login": "jarrodmillman", 
+            "team": [
+                "jarrodmillman"
+            ], 
+            "url": "git@github.com:jarrodmillman/example-project.git", 
+            "type": "projects"
+        }
+    }, 
+    "students": {
+        "jarrodmillman": {
+            "login": "jarrodmillman", 
+            "status": "enrolled", 
+            "url": "git@github.com:jarrodmillman/example-student.git", 
+            "type": "students"
+        }
+    }
+}
