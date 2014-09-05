@@ -10,8 +10,10 @@ Example class repo for use with
 1. Clone student repos with `gb-clone student`
 1. Clone project repos with `gb-clone project`
 
+Here is what the repo might look like once you have one
+student and have assigned one homework.
 
-
+```
     .
     ├── data
     │   ├── github
@@ -20,7 +22,7 @@ Example class repo for use with
     │   ├── README.md
     │   └── repos.py
     ├── log
-    │   └── grade.log
+    │   └── 2014-09-04-assigned-hw1.log
     ├── README.md
     └── repos
         ├── instructor
@@ -35,3 +37,4 @@ Example class repo for use with
                 └── hw1
                    ├── ex1.r
                    └── ex1-data.csv
+```
