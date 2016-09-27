@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# use https://github.com/education/teachers_pet
+#
+# Create a students file (you can use an alternate filename and specify with the --students option if you like)
+#    Individual assignments: one username per line
+#    Group assignments: one team per line in the format teamName username username username
+# Add the GitHub username of all instructors to an Owners.csv file (one per line)
+
+# needs a OAUTH token
+TOKEN=`cat oauth_token_teachers_pet`
+
+ORG=berkeley-stat159
+
+# create a team for each student and add instructors
+teachers_pet create_student_teams --organization $ORG --token $TOKEN
+
+# create private individual repos for each student
+teachers_pet create_repos --organization $ORG --repository work --no-public \
+ --token $TOKEN
+
+# populate repos w/ boiler plate
+git clone git@github.com:$ORG/student-template.git
+cp students student-template/.
+cd student-template
+teachers_pet push_files --organization $ORG --repository work --token $TOKEN
+cd ..
+rm -rf student-template

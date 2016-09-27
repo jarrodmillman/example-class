@@ -1,0 +1,20 @@
+import csv
+import json
+
+from gradebook import grades, get_grades
+
+inconf = "config.json"
+outname = "grades.csv"
+
+assignments = get_grades(inconf)
+header = ['id']+['SID']+[a for x in assignments for a in assignments[x]]
+
+with open(outname, 'w') as outfile:
+    writer = csv.writer(outfile)
+    writer.writerow(header)
+    for student in grades['students'].values():
+        print student['login']
+        if student['status'] != 'enrolled':
+            continue
+        scores = [student['grades'][a].get('earned','') for a in header[2:]]
+        writer.writerow([student['login']]+[student['SID']]+scores)

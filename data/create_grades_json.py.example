@@ -1,0 +1,41 @@
+# Create the grades.json file based on the example file (example_grades.json)
+# and the list of students
+import json
+import numpy as np
+
+def create_student_dict(name, status="enrolled"):
+    """Create a dictionary for the students based on the example json file. All
+       of the required information is derived from the github username (i.e.
+       the name input)
+    """
+    d = {}
+    d["login"] = name
+    d["status"] = status
+    d["type"] = "students"
+    d["url"] = "git@github.com:berkeley-stat159/%s-work.git" %(name)
+    return d
+
+# Filenames
+json_example_filename = "example_grades.json"
+json_output_filename = "grades.json"
+student_filename = "students"
+
+# Load the example json file
+with open(json_example_filename, 'r') as infile:
+    grades = json.load(infile)
+
+# Load the student data (a list of github logins)
+with open(student_filename, 'r') as sf:
+    students = sf.readlines()
+students = np.array([s.rstrip() for s in students])
+
+# Create the dictionaries of student data
+student_dict = {}
+for student in students:
+    k, v = student, create_student_dict(student)
+    student_dict[k] = v
+grades["students"] = student_dict
+    
+# Dump to json output file
+with open(json_output_filename, 'w') as outfile:
+    json.dump(grades, outfile, sort_keys=True, indent=4)

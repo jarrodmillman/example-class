@@ -1,0 +1,101 @@
+gb = read.csv('grades.csv', row.names=1)
+ids = gb$SID
+gb = gb[-1]
+
+begins = function(s, p) substring(s,1,nchar(p)) == p
+
+hw = list()
+reading = list()
+qz = list()
+ec = list()
+project = list()
+
+hw$str = 'hw'
+hw$indx = sapply(names(gb), begins, p=hw$str)
+hw$n = sum(hw$indx)
+
+reading$str = 'reading'
+reading$indx = sapply(names(gb), begins, p=reading$str)
+# dropping 2 lowest
+reading$n = sum(reading$indx)-2
+
+qz$str = 'qz'
+qz$indx = sapply(names(gb), begins, p=qz$str)
+# dropping lowest
+qz$n = sum(qz$indx)-1
+
+ec$str = 'extra'
+ec$indx = sapply(names(gb), begins, p=ec$str)
+ec$n = sum(ec$indx)
+
+# scale scores to 1
+hw$df = gb[, hw$indx]/100
+hw$scores = apply(hw$df, 1, function(x) (sum(x)/hw$n))
+
+hw$n
+length(hw$df[1,])
+print("homework")
+summary(hw$scores)
+
+reading$df = gb[, reading$indx]
+# map to numeric grade
+reading$df[reading$df == 0] = 0
+reading$df[reading$df == 1] = .85
+reading$df[reading$df == 2] = .95
+reading$df[reading$df == 3] = 1.0
+# drop 2 lowest
+reading$scores = apply(reading$df, 1, function(x) (sum(sort(x)[-c(1:2)])/reading$n))
+print("readings")
+summary(reading$scores)
+
+# divide by 27 instead of 30 - to be nice
+qz$df = gb[, qz$indx]/27
+# drop lowest score
+qz$worst = apply(qz$df, 1, which.min)
+qz$scores = sapply(1:nrow(gb), function(x) sum(qz$df[x, -qz$worst[x]])/qz$n)
+print("quizs")
+summary(qz$scores)
+
+# normalize to 1
+ec$df = gb[, ec$indx]/5
+ec$scores = ec$df
+
+
+# not recorded yet
+project$scores = gb[,'project']
+print("project")
+summary(project$scores)
+
+# need to add in .55*project$scores plus some multiple of ec$scores
+scores = (qz$scores*.15 + hw$scores*.2 + reading$scores*.1 + project$scores*.55)# + ec$scores*.05)
+
+gb[order(scores, decreasing=F)[1:10], 1:ncol(gb)]
+scores[order(scores)]
+gb.df = data.frame(scores=scores[order(scores)])
+
+
+### to convert numeric scores to letter grades
+gb.df['letters'] = cut(gb.df$scores, c(0,.70,.74,.77,.80,.84,.87,.90,.94,0.97,1.00),
+                            c("F","C-","C","C+","B-","B","B+","A-","A","A+"), right = FALSE)
+
+### save data
+write.csv(gb.df, file="final-grades.csv")
+
+### save data for uploading
+gb.submit = data.frame(id=ids[order(scores)], grade=gb.df['letters'])
+write.csv(gb.submit, file="submit-grades.csv", row.names=FALSE, quote=FALSE)
+
+plot(gb.df['letters'])
+## some code to help decide what cutoffs to use
+#stem(scores, scale=10)
+#print("total")
+#summary(scores)
+#min(scores)
+#max(scores)
+#length(unique(scores))
+#sum(scores >= .84)
+#sum(scores > .65 & scores < .84)
+#bw = 0.01
+#hist(scores, breaks=seq(min(scores),max(scores),bw), freq=FALSE, col='blue')
+#plot(density(scores, bw=bw))
+
